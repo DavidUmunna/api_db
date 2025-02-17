@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
+const bcrypt=require('bcrypt')
 const User=require('./models/User')
 
 // Access environment variables
@@ -45,15 +46,16 @@ app.post('/users', async (req, res) => {
 
 app.put('/users/:id', async (req, res) => {
     try{
-        const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+        const userId = new mongoose.Types.ObjectId(req.params.id);
+        const updatedUser = await User.findByIdAndUpdate(userId, req.body, { new: true, runValidators: true });
         if (!updatedUser) {
             return res.status(404).json({ error: 'User not found' });
         }
         res.status(200).json(updatedUser);
 
     }catch(err){
-        res.status(500).send(err)}
-    res.send('User updated successfully');
+        console.error(err)}
+   
 });
 
 app.delete('/users/:id', async (req, res) => {
